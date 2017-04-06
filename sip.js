@@ -607,7 +607,7 @@ function makeTcpTransport(options, callback) {
     function(port, host, callback) { return net.connect(port, host, callback); },
     function(callback) { 
       var server = net.createServer(callback);
-      server.listen(options.port || 5060, options.address);
+      server.listen((options.port!==undefined)? options.port : 5060, options.address);
       return server;
     },
     callback);
@@ -730,7 +730,7 @@ function makeUdpTransport(options, callback) {
   }
 
   var address = options.address || '0.0.0.0';
-  var port = options.port || 5060;
+  var port = (options.port!==undefined)? options.port : 5060;
 
   var socket = dgram.createSocket(net.isIPv6(address) ? 'udp6' : 'udp4', onMessage); 
   socket.bind(port, address);
@@ -777,7 +777,7 @@ function makeTransport(options, callback) {
     return Object.create(obj, {send: {value: function(m) {
       if(m.method) {
         m.headers.via[0].host = options.publicAddress || options.address || options.hostname || os.hostname();
-        m.headers.via[0].port = options.port || defaultPort(this.protocol);
+        m.headers.via[0].port = (options.port!==undefined)? options.port : defaultPort(this.protocol);
         m.headers.via[0].protocol = this.protocol;
 
         if(this.protocol === 'UDP' && (!options.hasOwnProperty('rport') || options.rport)) {
